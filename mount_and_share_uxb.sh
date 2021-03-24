@@ -5,7 +5,10 @@
 # eg /usb1/shares/music is shared as music
 
 # requires samba installing
-# sudo apt-get install samba
+echo "samba-common samba-common/workgroup string  WORKGROUP" | sudo debconf-set-selections
+echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
+echo "samba-common samba-common/do_debconf boolean true" | sudo debconf-set-selections
+apt-get install samba ntfs-3g fuse -y -qq
 
 # place line in /etc/rc.local to call this bash script on startup
 # eg sudo bash /home/pi/mount_and_share_uxb.sh
@@ -13,12 +16,12 @@
 SAMBA=/etc/samba/smb.conf
 
 # make backup of samba config
-if ! [ -f "$SAMBA" ]; then
-    cp $SAMBA /etc/samba/smb.conf.orig
+if ! [ -f "$SAMBA.orig" ]; then
+    cp $SAMBA $SAMBA.orig
 fi
 
 # restore samba config
-cp /etc/samba/smb.conf.orig $SAMBA
+cp $SAMBA.orig $SAMBA
 
 for value in {1..9}
 do
@@ -31,7 +34,7 @@ if [ -b "$DIR" ]; then
     fi
         mount $DIR $USB
     if [ -d "$USB/shares" ]; then
-       for dir in "$USB/shares/*"; do
+       for dir in $(ls "$USB/shares"); do
             SHARE=$(basename $dir)
             echo Sharing $SHARE
             echo [$SHARE]>>$SAMBA
@@ -45,3 +48,4 @@ if [ -b "$DIR" ]; then
 fi
 done
 service smbd restart
+
