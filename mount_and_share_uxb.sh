@@ -11,6 +11,13 @@
 # eg sudo bash /home/pi/mount_and_share_uxb.sh
 
 SAMBA=/etc/samba/smb.conf
+
+# make backup of samba config
+if ! [ -f "$SAMBA" ]; then
+    cp $SAMBA /etc/samba/smb.conf.orig
+fi
+
+# restore samba config
 cp /etc/samba/smb.conf.orig $SAMBA
 
 for value in {1..9}
