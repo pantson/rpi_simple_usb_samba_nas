@@ -39,29 +39,28 @@ fi
 # restore samba config
 cp $SAMBA.orig $SAMBA
 
-for value in {1..9}
-do
-DIR=/dev/sda$value
-if [ -b "$DIR" ]; then
-    echo Mounting $DIR
-    USB=/media/usb$value
-    if ! [ -d "$USB" ]; then
-        mkdir $USB
-    fi
+for drive in {a..z}; do
+    DIR=/dev/sd${drive}1
+    if [ -b "$DIR" ]; then
+        echo Mounting $DIR
+        USB=/media/usb$drive
+        if ! [ -d "$USB" ]; then
+            mkdir $USB
+        fi
         mount $DIR $USB
-    if [ -d "$USB/shares" ]; then
-       for dir in $(ls "$USB/shares"); do
-            SHARE=$(basename $dir)
-            echo Sharing $SHARE
-            echo [$SHARE]>>$SAMBA
-            echo path= $USB/shares/$SHARE>>$SAMBA
-            echo writable = no>>$SAMBA
-            echo public = yes>>$SAMBA
-            echo create mask=0777>>$SAMBA
-            echo directory mask=0777>>$SAMBA
-        done
+        if [ -d "$USB/shares" ]; then
+           for dir in $(ls "$USB/shares"); do
+                SHARE=$(basename $dir)
+                echo Sharing $SHARE
+                echo [$SHARE]>>$SAMBA
+                echo path= $USB/shares/$SHARE>>$SAMBA
+                echo writable = no>>$SAMBA
+                echo public = yes>>$SAMBA
+                echo create mask=0777>>$SAMBA
+                echo directory mask=0777>>$SAMBA
+            done
+        fi
     fi
-fi
 done
 service smbd restart
 
