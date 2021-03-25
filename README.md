@@ -30,7 +30,7 @@ Use Raspberry Pi Imager to install the Raspberry Pi Lite OS on an SD card. A sma
 
 Copy 2 files onto the boot volume
 + ssh  (to enable ssh on boot)
-+ wpa   (to auto join your wifi network. More info here  )
++ wpa_supplicant.conf (to auto join your wifi network. More info https://raspberrytips.com/raspberry-pi-wifi-setup/#wpa_supplicantconf )
 
 Place the SD card in your Pi and power on. After a few mins, you should be able to ssh to the new device (default hostname is raspberrypi).
 ```
