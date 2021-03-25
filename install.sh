@@ -3,3 +3,4 @@ wget https://raw.githubusercontent.com/pantson/rpi_simple_usb_samba/main/mount_a
 chmod +x mount_and_share_uxb.sh
 sudo awk '/exit 0/ { print "sudo bash /home/pi/mount_and_share_uxb.sh"}1' /etc/rc.local > /tmp/rc.local
 sudo mv /tmp/rc.local /etc/rc.local
+
