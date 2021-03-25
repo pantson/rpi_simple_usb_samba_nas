@@ -28,6 +28,8 @@ if [ -f "/tmp/rc.local" ]; then
   mv /tmp/rc.local /etc/rc.local
 fi
 
-# reboot
-echo Rebooting...
-shutdown -r now
+# run setup
+/home/pi/mount_and_share_uxb.sh
+
+# finished
+echo Ready
