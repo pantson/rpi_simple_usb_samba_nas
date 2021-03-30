@@ -16,6 +16,9 @@
 # misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
 
+# update
+apt-get update
+
 # download file
 wget -O mount_and_share_uxb.sh https://raw.githubusercontent.com/pantson/rpi_simple_usb_samba/main/mount_and_share_uxb.sh
 
