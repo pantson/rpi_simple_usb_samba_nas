@@ -24,12 +24,17 @@
 echo "samba-common samba-common/workgroup string  WORKGROUP" | sudo debconf-set-selections
 echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
 echo "samba-common samba-common/do_debconf boolean true" | sudo debconf-set-selections
-apt-get install samba ntfs-3g fuse -y -qq
+apt update
+apt install samba ntfs-3g fuse3 -y -qq
 
-# place line in /etc/rc.local to call this bash script on startup
-# eg sudo bash /home/pi/mount_and_share_uxb.sh
+# place line in crontab to call this bash script on startup
+# crontab -e
+# @reboot /home/pi/mount_and_share_uxb.sh
 
 SAMBA=/etc/samba/smb.conf
+LNKDIR=/opt/links
+rm -rf $LNKDIR
+mkdir $LNKDIR
 
 # make backup of samba config
 if ! [ -f "$SAMBA.orig" ]; then
@@ -51,16 +56,31 @@ for drive in {a..z}; do
         if [ -d "$USB/shares" ]; then
            for dir in $(ls "$USB/shares"); do
                 SHARE=$(basename $dir)
-                echo Sharing $SHARE
-                echo [$SHARE]>>$SAMBA
-                echo path= $USB/shares/$SHARE>>$SAMBA
-                echo writable = no>>$SAMBA
-                echo public = yes>>$SAMBA
-                echo create mask=0777>>$SAMBA
-                echo directory mask=0777>>$SAMBA
+                NEWLNKDIR=$LNKDIR/$SHARE
+                if [ ! -d "$NEWLNKDIR" ]; then
+                    mkdir $NEWLNKDIR
+
+                    echo Sharing $SHARE
+                    echo [$SHARE]>>$SAMBA
+                    echo path= $LNKDIR/$SHARE>>$SAMBA
+                    echo writable = no>>$SAMBA
+                    echo public = yes>>$SAMBA
+                    echo create mask=0777>>$SAMBA
+                    echo directory mask=0777>>$SAMBA
+                    echo follow symlinks = yes>>$SAMBA
+                    echo wide links = yes>>$SAMBA
+                fi
+
+                for file in $USB/shares/$SHARE/*; do
+                    g=${file##*/}
+                    ln -s "$file" "$NEWLNKDIR/$g"
+                done
             done
         fi
     fi
 done
-service smbd restart
 
+echo [global]>>$SAMBA
+echo allow insecure wide links = yes>>$SAMBA
+
+service smbd restart
