@@ -16,13 +16,17 @@ USB1
 + shares
 |    + music
 |    - photos
+          + gallery1
 - pictures
 
 USB2
 + shares
-     - documents
+     + documents
+     - photos
+		      + gallery2
 ```
 The above layout will create samba shares 'music','photos' and 'documents'. It will not create a share called pictures as its not in the shares folder.
+gallery1 and gallery2 will be in the photos share.
 
 ## Installation
 
